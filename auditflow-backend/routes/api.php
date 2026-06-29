@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\DocumentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -34,6 +35,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    Route::get('/user', fn (Request $request) => response()->json($request->user()));
+    Route::get('/user', fn(Request $request) => response()->json($request->user()));
+
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+
+    Route::post('/documents/upload', [DocumentController::class, 'upload']);
 
 });

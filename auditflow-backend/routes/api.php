@@ -42,5 +42,6 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/documents/upload', [DocumentController::class, 'upload']);
+    Route::get('/documents', [DocumentController::class, 'index']);
 
 });

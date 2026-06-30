@@ -10,6 +10,8 @@ import {
 
 import { getUser, login as loginService, logout as logoutService, register as registerService } from "@/services/auth.service";
 import { getToken, setToken, removeToken } from "@/lib/auth";
+import { useRouter } from "next/navigation";
+
 
 interface User {
     id: number;
@@ -44,6 +46,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
+    const router = useRouter();
 
     useEffect(() => {
         const initialize = async () => {
@@ -91,9 +94,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const logout = async () => {
         try {
             await logoutService();
+        } catch (error) {
+            console.error("Logout failed:", error);
         } finally {
             removeToken();
             setUser(null);
+            router.replace("/login");
         }
     };
 

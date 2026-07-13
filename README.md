@@ -3,7 +3,7 @@
 An AI-powered web application that automates document compliance reviews by extracting text from uploaded PDF documents, analyzing potential legal and compliance risks using Large Language Models (LLMS), and generating structured audit reports with actionable recommendations.
 The application is designed using a scalable asynchronous architecture, allowing uploaded documents to be processed in the background while providing users with real-time status updates and detailed analytics.
 
-** PROJECT STATUS: ** In Development (Phase 7 - PDF Text Extraction)
+**PROJECT STATUS:** In Development (Phase 7 - PDF Text Extraction)
  --- 
  ## FEATURES
 
@@ -135,7 +135,7 @@ The application is designed using a scalable asynchronous architecture, allowing
 
 ```
 
-** Current Status: ** The Application successfully uploads PDF documents, stores metadata and files, dispatches background jobs through Redis, extracts and normalizes PDF text, and saves the extracted content for future AI analysis. OpenAI integration and automated compliance analysis will be implemented in the next development phase.
+**Current Status:** The Application successfully uploads PDF documents, stores metadata and files, dispatches background jobs through Redis, extracts and normalizes PDF text, and saves the extracted content for future AI analysis. OpenAI integration and automated compliance analysis will be implemented in the next development phase.
 
 ---
 

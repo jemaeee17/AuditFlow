@@ -3,7 +3,7 @@
 An AI-powered web application that automates document compliance reviews by extracting text from uploaded PDF documents, analyzing potential legal and compliance risks using Large Language Models (LLMS), and generating structured audit reports with actionable recommendations.
 The application is designed using a scalable asynchronous architecture, allowing uploaded documents to be processed in the background while providing users with real-time status updates and detailed analytics.
 
-**PROJECT STATUS:** In Development (Phase 7 - PDF Text Extraction)
+**PROJECT STATUS:** In Development (Phase 7 - Complete - Phase 8 Next)
  --- 
  ## FEATURES
 
@@ -12,13 +12,16 @@ The application is designed using a scalable asynchronous architecture, allowing
  - User Authentication (Laravel Sanctum)
  - Secure PDF Document Upload
  - Asynchronous Document Processing
- - Redis Queue & Background Workers
+ - Database Queue & Background Workers
  - PDF Text Extraction
  - Clean Text Normalization
+ - Extracted Text Storage
+ - Document Processing Status Tracking
  - PostgreSQL Data Storage
 
 ### Planned Features
 
+- Redis Queue Migration
 - AI-Powered Compliance Analysis
 - Risk Scoring
 - Compliance Summary
@@ -44,7 +47,7 @@ The application is designed using a scalable asynchronous architecture, allowing
                 ┌───────────────────┼───────────────────┐
                 │                   │                   │
                 │                   │                   │
-          PostgreSQL           File Storage         Redis Queue
+          PostgreSQL           File Storage         Database Queue
         (Metadata, Chat,     (PDF/Markdown)       (Background Jobs)
          Users, Documents)          │                   │
                 │                   │                   │
@@ -52,9 +55,9 @@ The application is designed using a scalable asynchronous architecture, allowing
                                │                        │
                                │                  Queue Worker
                                │                        │
-                               │                Parse Document
+                               │                AnalyzeDocumentJob
                                │                        │
-                               │                Generate Chunks
+                               │                PDF Extraction
                                │                        │
                                │                Call OpenAI API
                                │                        │
@@ -82,8 +85,13 @@ The application is designed using a scalable asynchronous architecture, allowing
 
 ## QUEUE SYSTEM
 
-- Redis
+- Laravel Database Queue
 - Laravel Queue Workers
+
+## PLANNED INFRASTRUCTURE
+
+- Redis Queue
+- Redis-based Background Processing
 
 ## AI
 
@@ -98,7 +106,7 @@ The application is designed using a scalable asynchronous architecture, allowing
 ## CURRENT WORKFLOW
 
 ```
-                 User
+                User
                   │
                   ▼
          Next.js Frontend
@@ -106,9 +114,9 @@ The application is designed using a scalable asynchronous architecture, allowing
           Upload PDF Document
                   │
                   ▼
-             Laravel REST API
+             Laravel API
                   │
-     Validate & Store Document
+        Validate & Store Document
                   │
         Save Metadata (PostgreSQL)
                   │
@@ -116,27 +124,33 @@ The application is designed using a scalable asynchronous architecture, allowing
                   │
                   ▼
       Dispatch Background Job
-             (Redis Queue)
+             (Database Queue)
                   │
                   ▼
            Queue Worker
                   │
                   ▼
-          Load PDF Document
+       AnalyzeDocumentJob
                   │
                   ▼
-         Extract PDF Text
+        PdfExtractionService
+                  │
+                  ▼
+          Extract PDF Text
                   │
                   ▼
         Clean & Normalize Text
                   │
                   ▼
-    Store Extracted Text (PostgreSQL)
+       Store Extracted Text
+                  │
+                  ▼
+      Update Processing Status
+            → completed
 
 ```
 
-**Current Status:** The Application successfully uploads PDF documents, stores metadata and files, dispatches background jobs through Redis, extracts and normalizes PDF text, and saves the extracted content for future AI analysis. OpenAI integration and automated compliance analysis will be implemented in the next development phase.
-
+**Current Status:** The application successfully uploads PDF documents, stores document metadata and files, dispatches asynchronous background jobs through Laravel's database queue, extracts text from text-based PDF documents, normalizes the extracted content, and stores the processed text in PostgreSQL. Document processing status is updated upon successful completion. Phase 7 (PDF Text Extraction) is complete. OpenAI integration and automated compliance analysis will be implemented in Phase 8.
 ---
 
 # Planned Processing Pipeline
@@ -218,21 +232,22 @@ The application is designed using a scalable asynchronous architecture, allowing
 
 ## Phase 5
 
-- Redis Queue
+- Database Queue
 - Background Processing
+- Queue Configuration
 
 ## Phase 6
 
 - Queue Worker
 - AnalyzeDocumentJob
 
-## Phase 7 *(Current)*
+## Phase 7 *(Complete)*
 
 - PDF Text Extraction
 - Text Cleaning
 - Whitespace Normalization
 
-## Phase 8
+## Phase 8 *(Current)*
 
 - OpenAI Integration
 - Prompt Engineering

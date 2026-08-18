@@ -12,7 +12,10 @@ class PdfExtractionService
     {
         $filePath = storage_path('app/public/' . $document->file_path);
 
-        $text = Pdf::getText($filePath);
+        $text = Pdf::getText(
+            $filePath,
+            config('services.pdf.pdftotext_binary')
+        );
 
         $text = preg_replace('/\s+/', ' ', $text);
         $text = trim($text);

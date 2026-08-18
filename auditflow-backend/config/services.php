@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'pdf' => [
+        'pdftotext_binary' => env('PDFTOTEXT_BINARY'),
+    ],
+
 ];

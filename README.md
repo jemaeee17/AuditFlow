@@ -1,9 +1,9 @@
 # AUDITFLOW - AI-Powered Automated Compliance & Risk Analyzer
 
-An AI-powered web application that automates document compliance reviews by extracting text from uploaded PDF documents, analyzing potential legal and compliance risks using Large Language Models (LLMS), and generating structured audit reports with actionable recommendations.
+An AI-powered web application that automates document compliance reviews by extracting text from uploaded PDF documents, analyzing potential legal and compliance risks using Google Gemini, and generating structured audit reports with actionable recommendations.
 The application is designed using a scalable asynchronous architecture, allowing uploaded documents to be processed in the background while providing users with real-time status updates and detailed analytics.
 
-**PROJECT STATUS:** In Development (Phase 7 - Complete - Phase 8 Next)
+**PROJECT STATUS:** In Development (Phase 8 - Complete - Phase 9 Next)
  --- 
  ## FEATURES
 
@@ -18,6 +18,10 @@ The application is designed using a scalable asynchronous architecture, allowing
  - Extracted Text Storage
  - Document Processing Status Tracking
  - PostgreSQL Data Storage
+ - Gemini AI Integration
+ - AI-Powered Compliance Analysis
+ - Structured Compliance JSON Output
+ - AI Response JSON Validation
 
 ### Planned Features
 
@@ -59,8 +63,10 @@ The application is designed using a scalable asynchronous architecture, allowing
                                │                        │
                                │                PDF Extraction
                                │                        │
-                               │                Call OpenAI API
+                               │                Gemini Compliance Analysis
                                │                        │
+                               │                Structured Compliance JSON    
+                               │                            
                                └──────────────► Store Results
                                                 (PostgreSQL)
 
@@ -95,7 +101,7 @@ The application is designed using a scalable asynchronous architecture, allowing
 
 ## AI
 
-- OpenAI API *(planned)*
+- Google Gemini API 
 
 ## PDF PROCESSING
 
@@ -150,7 +156,7 @@ The application is designed using a scalable asynchronous architecture, allowing
 
 ```
 
-**Current Status:** The application successfully uploads PDF documents, stores document metadata and files, dispatches asynchronous background jobs through Laravel's database queue, extracts text from text-based PDF documents, normalizes the extracted content, and stores the processed text in PostgreSQL. Document processing status is updated upon successful completion. Phase 7 (PDF Text Extraction) is complete. OpenAI integration and automated compliance analysis will be implemented in Phase 8.
+**Current Status:** The application successfully uploads PDF documents, stores document metadata and files, dispatches asynchronous background jobs through Laravel's database queue, extracts text from text-based PDF documents, normalizes the extracted content, and stores the processed text in PostgreSQL. Document processing status is updated upon successful completion. Phase 7 (PDF Text Extraction) is complete. Phase 8 (Gemini AI Integration) is also complete, including prompt engineering, structured compliance analysis, JSON parsing, and response validation. AI analysis has been successfully tested using both sample text and extracted text from an actual uploaded PDF document.
 ---
 
 # Planned Processing Pipeline
@@ -181,7 +187,7 @@ The application is designed using a scalable asynchronous architecture, allowing
         │                       │
         └───────────┬───────────┘
                     │
-             OpenAI Analysis
+             Gemini AI Analysis
                     │
       Structured Compliance JSON
                     │
@@ -241,22 +247,28 @@ The application is designed using a scalable asynchronous architecture, allowing
 - Queue Worker
 - AnalyzeDocumentJob
 
-## Phase 7 *(Complete)*
+## Phase 7 
 
 - PDF Text Extraction
 - Text Cleaning
 - Whitespace Normalization
 
-## Phase 8 *(Current)*
+## Phase 8 *(Complete)*
 
-- OpenAI Integration
+- Gemini API Integration
 - Prompt Engineering
-- JSON Validation
+- Structured Compliance JSON Output
+- JSON Parsing
+- AI Response Validation
+- Compliance Analysis Testing
 
-## Phase 9
+## Phase 9 *(Current)*
 
-- Store Audit Results
+- Store Result Database Schema
+- Store Compliance Analysis
+- Store Risk Findings
 - Document Status Updates
+- Failed Analysis Handling
 
 ## Phase 10
 

@@ -117,8 +117,77 @@ The application is designed using a scalable asynchronous architecture, allowing
 
 ## CURRENT WORKFLOW
 
-```
-               User │ ▼ Next.js Frontend │ Upload PDF │ ▼ Laravel API │ Validate Document │ ┌───────────┴───────────┐ │ │ ▼ ▼ Store Metadata Store PDF File PostgreSQL File Storage │ ▼ Dispatch Background Job Database Queue │ ▼ Queue Worker │ ▼ AnalyzeDocumentJob │ ▼ PdfExtractionService │ ▼ Extract PDF Text │ ▼ Clean & Normalize Text │ ▼ Store Extracted Text │ ▼ ComplianceAnalysisService │ ▼ Gemini AI Analysis │ ▼ Structured Compliance JSON │ ▼ Validate AI Response │ ▼ Create/Update AuditResult │ ▼ Store Compliance Data PostgreSQL │ ▼ Update Document Status → completed
+```text
+User
+ │
+ ▼
+Next.js Frontend
+ │
+ │ Upload PDF
+ ▼
+Laravel API
+ │
+ ├───────────────┐
+ │               │
+ ▼               ▼
+Validate       Store PDF
+Document       File Storage
+ │
+ ▼
+Store Metadata
+PostgreSQL
+ │
+ ▼
+Dispatch Background Job
+Database Queue
+ │
+ ▼
+Queue Worker
+ │
+ ▼
+AnalyzeDocumentJob
+ │
+ ▼
+PdfExtractionService
+ │
+ ▼
+Extract PDF Text
+ │
+ ▼
+Clean & Normalize Text
+ │
+ ▼
+Store Extracted Text
+ │
+ ▼
+ComplianceAnalysisService
+ │
+ ▼
+Gemini AI Analysis
+ │
+ ▼
+Structured Compliance JSON
+ │
+ ▼
+Validate AI Response
+ │
+ ▼
+Create/Update AuditResult
+ │
+ ├── Compliance Score
+ ├── Issues / Findings
+ ├── Recommendations
+ └── Summary
+ │
+ ▼
+Store Audit Result
+PostgreSQL
+ │
+ ▼
+Update Document Status
+ │
+ ▼
+completed
 ```
 
 **Current Status:** The application successfully uploads PDF documents, stores document metadata and files, dispatches asynchronous background jobs through Laravel's database queue, extracts text from text-based PDF documents, normalizes the extracted content, and stores the processed text in PostgreSQL.
@@ -128,16 +197,28 @@ Phase 7 (PDF Text Extraction), Phase 8 (Gemini AI Integration), and Phase 9 (Aud
 The system has been successfully tested using both sample text and extracted text from an actual uploaded PDF document.
 ---
 
-# Audit Result Data
-- Each analyzed document can have a corresponding audit result containing:
+## Audit Result Data
 
-```
-AuditResult │ ├── document_id ├── compliance_score ├── issues │ ├── category │ ├── severity │ ├── clause │ └── issue │ ├── recommendations │ ├── category │ └── recommendation │ ├── summary ├── analyzed_at └── timestamps
-```
-- the issues and recommendations fields are stored as JSON and cast to PHP arrays through Laravel Eloquent.
-- The Document model maintains a one-to-one relationship with AuditResult.
+Each analyzed document can have a corresponding audit result containing:
+
+```text
+AuditResult
+├── document_id
+├── compliance_score
+├── issues
+│   ├── category
+│   ├── severity
+│   ├── clause
+│   └── issue
+├── recommendations
+│   ├── category
+│   └── recommendation
+├── summary
+├── analyzed_at
+└── timestamps
 
 # Example AI Analysis
+
 - Example output generated from an uploaded PDF document:
 ```
 { "overall_risk": "low", "compliance_score": 90, "summary": "The document is a standard job application cover letter...", "findings": [ { "category": "Missing Information", "severity": "low", "clause": "Sincerely, Jemae Lyn Bandiola", "issue": "The document does not contain contact information..." } ], "recommendations": [ { "category": "Missing Information", "severity": "low", "recommendation": "Request the candidate's contact details..." } ] }

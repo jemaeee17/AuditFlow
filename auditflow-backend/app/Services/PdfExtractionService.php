@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Document;
-use App\Enums\DocumentProcessingStatus;
 use Spatie\PdfToText\Pdf;
 
 class PdfExtractionService
@@ -22,7 +21,6 @@ class PdfExtractionService
 
         $document->update([
             'extracted_text' => $text,
-            'processing_status' => DocumentProcessingStatus::Completed,
         ]);
     }
 }

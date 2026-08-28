@@ -3,7 +3,7 @@
 An AI-powered web application that automates document compliance reviews by extracting text from uploaded PDF documents, analyzing potential legal and compliance risks using Google Gemini, and generating structured audit reports with actionable recommendations.
 The application is designed using a scalable asynchronous architecture, allowing uploaded documents to be processed in the background while providing users with real-time status updates and detailed analytics.
 
-**PROJECT STATUS:** In Development (Phase 8 - Complete - Phase 9 Next)
+**PROJECT STATUS:** In Development (Phase 9 - Complete - Phase 10 Next)
  --- 
  ## FEATURES
 
@@ -22,17 +22,21 @@ The application is designed using a scalable asynchronous architecture, allowing
  - AI-Powered Compliance Analysis
  - Structured Compliance JSON Output
  - AI Response JSON Validation
+ - Compliance Score Generation
+ - Risk Finding Detection
+ - Compliance Recommendations
+ - Compliance Summary Generation
+ - Audit Result Database Storage
+ - Document-to-Aid Result Relationship
+ - Analysis Timestamp Tracking
 
 ### Planned Features
 
 - Redis Queue Migration
-- AI-Powered Compliance Analysis
-- Risk Scoring
-- Compliance Summary
-- Clause Detection
+- Live Progress Updates
 - Dashboard and Analytics
+- Risk Visualization
 - Audit History
-- Real-Time Processing Updates
 - PDF Report Export
 - Chat with Document (RAG)
 
@@ -52,8 +56,9 @@ The application is designed using a scalable asynchronous architecture, allowing
                 │                   │                   │
                 │                   │                   │
           PostgreSQL           File Storage         Database Queue
-        (Metadata, Chat,     (PDF/Markdown)       (Background Jobs)
-         Users, Documents)          │                   │
+        (Metadata,            (PDF/Markdown)       (Background Jobs)
+         Users, Documents,          |                   |
+         Audit Results)             │                   │
                 │                   │                   │
                 └──────────────┬────┘                   │
                                │                        │
@@ -67,7 +72,7 @@ The application is designed using a scalable asynchronous architecture, allowing
                                │                        │
                                │                Structured Compliance JSON    
                                │                            
-                               └──────────────► Store Results
+                               └──────────────► Store Audit Results
                                                 (PostgreSQL)
 
 ```
@@ -105,59 +110,39 @@ The application is designed using a scalable asynchronous architecture, allowing
 
 ## PDF PROCESSING
 
-- PDF Parser Library
+- Spatie Laravel PDF-to-text
+- Poppler pdftotext
 
 ---
 
 ## CURRENT WORKFLOW
 
 ```
-                User
-                  │
-                  ▼
-         Next.js Frontend
-                  │
-          Upload PDF Document
-                  │
-                  ▼
-             Laravel API
-                  │
-        Validate & Store Document
-                  │
-        Save Metadata (PostgreSQL)
-                  │
-        Store PDF (File Storage)
-                  │
-                  ▼
-      Dispatch Background Job
-             (Database Queue)
-                  │
-                  ▼
-           Queue Worker
-                  │
-                  ▼
-       AnalyzeDocumentJob
-                  │
-                  ▼
-        PdfExtractionService
-                  │
-                  ▼
-          Extract PDF Text
-                  │
-                  ▼
-        Clean & Normalize Text
-                  │
-                  ▼
-       Store Extracted Text
-                  │
-                  ▼
-      Update Processing Status
-            → completed
-
+               User │ ▼ Next.js Frontend │ Upload PDF │ ▼ Laravel API │ Validate Document │ ┌───────────┴───────────┐ │ │ ▼ ▼ Store Metadata Store PDF File PostgreSQL File Storage │ ▼ Dispatch Background Job Database Queue │ ▼ Queue Worker │ ▼ AnalyzeDocumentJob │ ▼ PdfExtractionService │ ▼ Extract PDF Text │ ▼ Clean & Normalize Text │ ▼ Store Extracted Text │ ▼ ComplianceAnalysisService │ ▼ Gemini AI Analysis │ ▼ Structured Compliance JSON │ ▼ Validate AI Response │ ▼ Create/Update AuditResult │ ▼ Store Compliance Data PostgreSQL │ ▼ Update Document Status → completed
 ```
 
-**Current Status:** The application successfully uploads PDF documents, stores document metadata and files, dispatches asynchronous background jobs through Laravel's database queue, extracts text from text-based PDF documents, normalizes the extracted content, and stores the processed text in PostgreSQL. Document processing status is updated upon successful completion. Phase 7 (PDF Text Extraction) is complete. Phase 8 (Gemini AI Integration) is also complete, including prompt engineering, structured compliance analysis, JSON parsing, and response validation. AI analysis has been successfully tested using both sample text and extracted text from an actual uploaded PDF document.
+**Current Status:** The application successfully uploads PDF documents, stores document metadata and files, dispatches asynchronous background jobs through Laravel's database queue, extracts text from text-based PDF documents, normalizes the extracted content, and stores the processed text in PostgreSQL.
+The extracted document content is then analyzed using Google Gemini through a dedicated ComplianceAnalysisService. The AI generates structured compliance results containing an overall risk level, compliance score, summary, findings, and recommendations.
+The AI response is validated and persisted through the AuditResult model and database schema.
+Phase 7 (PDF Text Extraction), Phase 8 (Gemini AI Integration), and Phase 9 (Audit Result Storage) are complete.
+The system has been successfully tested using both sample text and extracted text from an actual uploaded PDF document.
 ---
+
+# Audit Result Data
+- Each analyzed document can have a corresponding audit result containing:
+
+```
+AuditResult │ ├── document_id ├── compliance_score ├── issues │ ├── category │ ├── severity │ ├── clause │ └── issue │ ├── recommendations │ ├── category │ └── recommendation │ ├── summary ├── analyzed_at └── timestamps
+```
+- the issues and recommendations fields are stored as JSON and cast to PHP arrays through Laravel Eloquent.
+- The Document model maintains a one-to-one relationship with AuditResult.
+
+# Example AI Analysis
+- Example output generated from an uploaded PDF document:
+```
+{ "overall_risk": "low", "compliance_score": 90, "summary": "The document is a standard job application cover letter...", "findings": [ { "category": "Missing Information", "severity": "low", "clause": "Sincerely, Jemae Lyn Bandiola", "issue": "The document does not contain contact information..." } ], "recommendations": [ { "category": "Missing Information", "severity": "low", "recommendation": "Request the candidate's contact details..." } ] }
+```
+- this demonstrates the complete pipeline from the PDF upload -> text extraction -> AI Analysis -> structured JSON -> database persistence
 
 # Planned Processing Pipeline
 
@@ -252,8 +237,10 @@ The application is designed using a scalable asynchronous architecture, allowing
 - PDF Text Extraction
 - Text Cleaning
 - Whitespace Normalization
+- Extracted Text Storage
+- Document Processing Status
 
-## Phase 8 *(Complete)*
+## Phase 8 
 
 - Gemini API Integration
 - Prompt Engineering
@@ -261,34 +248,48 @@ The application is designed using a scalable asynchronous architecture, allowing
 - JSON Parsing
 - AI Response Validation
 - Compliance Analysis Testing
+- Testing with Extracted PDF Text
 
-## Phase 9 *(Current)*
+## Phase 9 *(Complete)*
 
-- Store Result Database Schema
-- Store Compliance Analysis
+- Audit Result Database Schema
+- AuditResult Model
+- Document-to-AuditResult Relationship
+- Store Compliance Score
 - Store Risk Findings
-- Document Status Updates
-- Failed Analysis Handling
+- Store Recommendations
+- Store Compliance Summary
+- Store Analysis Timestamp
+- Update Document Status
+- Verify End-to-End AI Analysis Persistence
 
-## Phase 10
+## Phase 10 *(Current)*
 
-- Live Progress Updates
+- Processing Status API
+- Live Processing Updates
+- Frontend Status Indicator
 
 ## Phase 11
 
-- Analytics Dashboard
 - Risk Score
 - Compliance Summary
+- Risk Breakdown
 - Charts
+- Compliance Recommendations
+- Document Analysis
 
 ## Phase 12
 
-- Audit History
+- Previous Audits
+- Audit Result History
+- Document Analysis History
 
 ## Phase 13
 
-- Chat with Document
+- Document Question Answering
 - Retrieval-Augmented Generation (RAG)
+- Document Chunk Retrieval
+- Context-Aware AI Responses
 
 ---
 
@@ -296,13 +297,16 @@ The application is designed using a scalable asynchronous architecture, allowing
 
 The application dashboard will include:
 
-- Overall Risk Score
+- Overall Compliance Score
+- Overall Risk Level
 - Executive Compliance Summary
 - Risk Breakdown
-- Clause Coverage
+- Compliance Findings
 - Compliance Recommendations
 - Previous Audits
-- Document Status Timeline
+- Document Processing Status
+- Analysis Timestamp
+- Document Audit History
 
 ---
 
@@ -356,6 +360,9 @@ This project was built to demonstrate modern software engineering practices, inc
 - Secure Authentication
 - PostgreSQL Database Design
 - AI Integration
+- Structured AI Output
+- JSON Validation
+- Service-Oriented Architecture
 - Scalable System Design
 - Retrieval-Augmented Generation (RAG)
 
@@ -363,6 +370,7 @@ This project was built to demonstrate modern software engineering practices, inc
 
 # FUTURE IMPROVEMENTS
 
+- Redis Queue Migration
 - Multi-Document Analysis
 - OCR Support for Scanned PDFs
 - Batch Processing

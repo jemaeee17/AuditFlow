@@ -9,6 +9,7 @@ class AuditResult extends Model
 {
     protected $fillable = [
         'document_id',
+        'overall_risk',
         'compliance_score',
         'issues',
         'recommendations',

@@ -26,6 +26,25 @@ class DocumentController extends Controller
         return response()->json($documents);
     }
 
+    public function show(Request $request, Document $document): JsonResponse
+    {
+        if ($document->user_id !== $request->user()->id) {
+            abort(403, 'Unauthorized access to this document.');
+        }
+
+        $document->load('auditResult');
+
+        return response()->json([
+            'id' => $document->id,
+            'title' => $document->title,
+            'original_filename' => $document->original_filename,
+            'processing_status' => $document->processing_status,
+            'created_at' => $document->created_at,
+            'updated_at' => $document->updated_at,
+            'audit_result' => $document->auditResult,
+        ]);
+    }
+
     public function upload(StoreDocumentRequest $request): JsonResponse
     {
         $document = $this->documentService->upload(

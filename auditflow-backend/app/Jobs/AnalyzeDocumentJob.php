@@ -31,7 +31,7 @@ class AnalyzeDocumentJob implements ShouldQueue
         PdfExtractionService $pdfExtractionService,
         ComplianceAnalysisService $complianceAnalysisService
     ): void {
-        Log::info('AnalyzeDocumentJob started.', [
+        Log::info("AnalyzeDocumentJob started.", [
             'document_id' => $this->documentId,
         ]);
 
@@ -45,36 +45,27 @@ class AnalyzeDocumentJob implements ShouldQueue
 
         $document->refresh();
 
-        $analysis = $complianceAnalysisService->analyzeDocument(
+        $result = $complianceAnalysisService->analyzeDocument(
             $document->extracted_text
         );
 
-        AuditResult::updateOrCreate(
+        $document->auditResult()->updateOrCreate(
             [
                 'document_id' => $document->id,
             ],
             [
-                'overall_risk' => $analysis['overall_risk'],
-                'compliance_score' => $analysis['compliance_score'],
-                'summary' => $analysis['summary'],
-                'issues' => collect($analysis['findings'])
-                    ->map(fn($finding) => [
+                'compliance_score' => $result['compliance_score'],
+                'issues' => $result['findings'],
+                'recommendations' => array_map(
+                    fn($finding) => [
                         'category' => $finding['category'],
-                        'severity' => $finding['severity'],
-                        'clause' => $finding['clause'],
-                        'issue' => $finding['issue'],
-                    ])
-                    ->values()
-                    ->all(),
-                'recommendations' => collect($analysis['findings'])
-                    ->map(fn($finding) => [
-                        'category' => $finding['category'],
-                        'severity' => $finding['severity'],
                         'recommendation' => $finding['recommendation'],
-                    ])
-                    ->values()
-                    ->all(),
+                    ],
+                    $result['findings']
+                ),
+                'summary' => $result['summary'],
                 'analyzed_at' => now(),
+                'overall_risk' => $result['overall_risk'],
             ]
         );
 
@@ -82,7 +73,7 @@ class AnalyzeDocumentJob implements ShouldQueue
             'processing_status' => DocumentProcessingStatus::Completed,
         ]);
 
-        Log::info('AnalyzeDocumentJob finished.', [
+        Log::info("AnalyzeDocumentJob finished.", [
             'document_id' => $this->documentId,
         ]);
     }

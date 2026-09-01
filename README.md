@@ -164,8 +164,90 @@ The application is designed using a scalable asynchronous architecture, allowing
 ## CURRENT WORKFLOW
 
 ```text
-User │ ▼ Next.js Frontend │ │ Upload PDF ▼ Laravel API │ ├──────────────────┐ │ │ ▼ ▼ Validate Store PDF Document File Storage │ ▼ Store Metadata PostgreSQL │ ▼ Dispatch Background Job Database Queue │ ▼ Queue Worker │ ▼ AnalyzeDocumentJob │ ├── Update Progress: 10% │ ▼ PdfExtractionService │ ├── Update Progress: 30% │ ▼ Extract PDF Text │ ▼ Clean & Normalize Text │ ▼ Store Extracted Text │ ├── Update Progress: 70% │ ▼ ComplianceAnalysisService │ ▼ Gemini AI Analysis │ ├── Update Progress: 90% │ ▼ Structured Compliance JSON │ ▼ Validate AI Response │ ▼ Create/Update AuditResult │ ├── Compliance Score ├── Overall Risk ├── Issues / Findings ├── Recommendations └── Summary │ ▼ Store Audit Result PostgreSQL │ ▼ Update Document Status │ ├── Processing Progress: 100% └── Status: Completed
-```
+User
+ │
+ ▼
+Next.js Frontend
+ │
+ │ Upload PDF
+ ▼
+Laravel API
+ │
+ ├──────────────────────┐
+ │                      │
+ ▼                      ▼
+Validate Document     Store PDF
+ │                    File Storage
+ ▼
+Store Metadata
+ │
+ ▼
+PostgreSQL
+ │
+ ▼
+Dispatch Background Job
+ │
+ ▼
+Database Queue
+ │
+ ▼
+Queue Worker
+ │
+ ▼
+AnalyzeDocumentJob
+ │
+ ├── Update Progress: 10%
+ │
+ ▼
+PdfExtractionService
+ │
+ ├── Update Progress: 30%
+ │
+ ▼
+Extract PDF Text
+ │
+ ▼
+Clean & Normalize Text
+ │
+ ▼
+Store Extracted Text
+ │
+ ├── Update Progress: 70%
+ │
+ ▼
+ComplianceAnalysisService
+ │
+ ▼
+Gemini AI Analysis
+ │
+ ├── Update Progress: 90%
+ │
+ ▼
+Structured Compliance JSON
+ │
+ ▼
+Validate AI Response
+ │
+ ▼
+Create/Update AuditResult
+ │
+ ├── Compliance Score
+ ├── Overall Risk
+ ├── Issues / Findings
+ ├── Recommendations
+ └── Summary
+ │
+ ▼
+Store Audit Result
+ │
+ ▼
+PostgreSQL
+ │
+ ▼
+Update Document Status
+ │
+ ├── Processing Progress: 100%
+ └── Status: Completed
 
 **Current Status:** 
 The application currently supports the complete document auditing workflow.

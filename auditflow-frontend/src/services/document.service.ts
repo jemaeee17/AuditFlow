@@ -1,4 +1,5 @@
 import api from "@/lib/axios";
+import { Document } from "@/types/document";
 
 export const uploadDocument = async (
     file: File,
@@ -33,6 +34,12 @@ export const uploadDocument = async (
 
 export const getDocuments = async () => {
     const response = await api.get("/documents");
+
+    return response.data;
+};
+
+export const getDocument = async (id: number): Promise<Document> => {
+    const response = await api.get<Document>(`/documents/${id}`);
 
     return response.data;
 };

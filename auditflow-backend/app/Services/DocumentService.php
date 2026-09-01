@@ -42,6 +42,8 @@ class DocumentService
             'extracted_text' => null,
 
             'processing_status' => DocumentProcessingStatus::Pending->value,
+
+            'processing_progress' => 0,
         ]);
     }
 }

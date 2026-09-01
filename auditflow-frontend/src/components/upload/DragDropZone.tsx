@@ -1,11 +1,13 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { uploadDocument } from "@/services/document.service";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { uploadDocument, getDocument } from "@/services/document.service";
 import UploadProgress from "./UploadProgress";
 import UploadSuccess from "./UploadSuccess";
 
 export default function DragDropZone() {
+    const router = useRouter();
     const inputRef = useRef<HTMLInputElement>(null);
     const [progress, setProgress] = useState(0);
 
@@ -17,6 +19,32 @@ export default function DragDropZone() {
 
     const [file, setFile] = useState<File | null>(null);
 
+    const [documentId, setDocumentId] = useState<number | null>(null);
+    const [processingStatus, setProcessingStatus] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (!documentId) return;
+
+        const interval = setInterval(async () => {
+            try {
+                const document = await getDocument(documentId);
+
+                setProcessingStatus(document.processing_status);
+
+                if (
+                    document.processing_status === "completed" ||
+                    document.processing_status === "failed"
+                ) {
+                    clearInterval(interval);
+                }
+            } catch (error) {
+                console.error("Failed to fetch document status:", error);
+            }
+        }, 2000);
+
+        return () => clearInterval(interval);
+    }, [documentId]);
+
     const handleFile = (selectedFile: File) => {
         setFile(selectedFile);
     };
@@ -25,14 +53,23 @@ export default function DragDropZone() {
         if (!file) return;
 
         setUploading(true);
-
         setSuccess(false);
-
         setError("");
+        setProgress(0);
+        setProcessingStatus(null);
 
         try {
-            await uploadDocument(file, setProgress);
+            const response = await uploadDocument(
+                file,
+                setProgress
+            );
 
+            const documentId = response.document.id;
+
+            setDocumentId(documentId);
+            setProcessingStatus(
+                response.document.processing_status
+            );
             setSuccess(true);
 
         } catch (err: any) {

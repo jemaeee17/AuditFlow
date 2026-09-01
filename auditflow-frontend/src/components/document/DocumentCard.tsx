@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Document } from "@/types/document";
 
 interface Props {
@@ -17,8 +18,13 @@ export default function DocumentCard({ document }: Props) {
         document.processing_status as keyof typeof statusStyles
         ] ?? "bg-gray-100 text-gray-700";
 
+    const progress = document.processing_progress ?? 0;
+
     return (
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <Link
+            href={`/documents/${document.id}`}
+            className="block rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-300 hover:shadow-md"
+        >
             <h3 className="font-semibold text-slate-900">
                 {document.original_filename}
             </h3>
@@ -44,6 +50,40 @@ export default function DocumentCard({ document }: Props) {
                     {(document.file_size / 1024).toFixed(2)} KB
                 </span>
             </div>
-        </div>
+
+            <div className="mt-4">
+                <div className="mb-2 flex items-center justify-between text-sm">
+                    <span className="text-slate-500">
+                        {document.processing_status === "completed"
+                            ? "Analysis completed"
+                            : document.processing_status === "failed"
+                                ? "Analysis failed"
+                                : document.processing_status === "processing"
+                                    ? "AI is analyzing your document..."
+                                    : "Waiting for processing..."}
+                    </span>
+
+                    <span className="font-medium text-slate-700">
+                        {progress}%
+                    </span>
+                </div>
+
+                <div className="h-2 overflow-hidden rounded-full bg-slate-200">
+                    <div
+                        className="h-full rounded-full bg-blue-500 transition-all duration-500"
+                        style={{
+                            width: `${progress}%`,
+                        }}
+                    />
+                </div>
+            </div>
+
+            {(document.processing_status === "pending" ||
+                document.processing_status === "processing") && (
+                    <p className="mt-3 text-xs text-slate-400">
+                        Please wait while AuditFlow processes your document.
+                    </p>
+                )}
+        </Link>
     );
 }

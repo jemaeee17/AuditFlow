@@ -17,11 +17,24 @@ class DocumentController extends Controller
     ) {
     }
 
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $documents = Document::where('user_id', $request->user()->id)
             ->latest()
-            ->get();
+            ->get()
+            ->map(function (Document $document) {
+                return [
+                    'id' => $document->id,
+                    'title' => $document->title,
+                    'original_filename' => $document->original_filename,
+                    'document_type' => $document->document_type,
+                    'file_size' => $document->file_size,
+                    'processing_status' => $document->processing_status,
+                    'processing_progress' => $document->processing_progress,
+                    'created_at' => $document->created_at,
+                    'updated_at' => $document->updated_at,
+                ];
+            });
 
         return response()->json($documents);
     }
@@ -38,7 +51,10 @@ class DocumentController extends Controller
             'id' => $document->id,
             'title' => $document->title,
             'original_filename' => $document->original_filename,
+            'document_type' => $document->document_type,
+            'file_size' => $document->file_size,
             'processing_status' => $document->processing_status,
+            'processing_progress' => $document->processing_progress,
             'created_at' => $document->created_at,
             'updated_at' => $document->updated_at,
             'audit_result' => $document->auditResult,

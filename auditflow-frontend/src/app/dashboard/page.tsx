@@ -9,6 +9,7 @@ import { Document } from "@/types/document";
 
 export default function DashboardPage() {
     const { user, logout } = useAuth();
+
     const [documents, setDocuments] = useState<Document[]>([]);
     const [loadingDocuments, setLoadingDocuments] = useState(true);
 
@@ -28,10 +29,27 @@ export default function DashboardPage() {
         }
     };
 
+    useEffect(() => {
+        const hasProcessingDocument = documents.some(
+            (document) =>
+                document.processing_status === "pending" ||
+                document.processing_status === "processing"
+        );
+
+        if (!hasProcessingDocument) {
+            return;
+        }
+
+        const interval = setInterval(() => {
+            loadDocuments();
+        }, 2000);
+
+        return () => clearInterval(interval);
+    }, [documents]);
+
     return (
         <main className="min-h-screen bg-slate-100">
 
-            {/* Header */}
             <header className="border-b bg-white">
                 <div className="mx-auto flex max-w-6xl items-center justify-between px-8 py-5">
 
@@ -55,8 +73,6 @@ export default function DashboardPage() {
                 </div>
             </header>
 
-            {/* Content */}
-
             <div className="mx-auto max-w-6xl p-8">
 
                 <h2 className="text-3xl font-bold text-slate-900">
@@ -66,8 +82,6 @@ export default function DashboardPage() {
                 <p className="mt-2 text-slate-600">
                     {user?.name}
                 </p>
-
-                {/* Upload Card */}
 
                 <Link
                     href="/upload"
@@ -81,8 +95,6 @@ export default function DashboardPage() {
                         Upload a PDF or Markdown document for AI auditing.
                     </p>
                 </Link>
-
-                {/* Recent Documents */}
 
                 <section className="mt-10 rounded-2xl bg-white p-8 shadow">
 
@@ -115,3 +127,4 @@ export default function DashboardPage() {
         </main>
     );
 }
+

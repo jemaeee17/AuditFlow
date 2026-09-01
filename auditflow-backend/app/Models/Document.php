@@ -18,6 +18,11 @@ class Document extends Model
         'document_type',
         'extracted_text',
         'processing_status',
+        'processing_progress',
+    ];
+
+    protected $casts = [
+        'processing_progress' => 'integer',
     ];
 
     /**

@@ -39,15 +39,28 @@ class AnalyzeDocumentJob implements ShouldQueue
 
         $document->update([
             'processing_status' => DocumentProcessingStatus::Processing,
+            'processing_progress' => 10,
+        ]);
+
+        $document->update([
+            'processing_progress' => 30,
         ]);
 
         $pdfExtractionService->extract($document);
 
         $document->refresh();
 
+        $document->update([
+            'processing_progress' => 70,
+        ]);
+
         $result = $complianceAnalysisService->analyzeDocument(
             $document->extracted_text
         );
+
+        $document->update([
+            'processing_progress' => 90,
+        ]);
 
         $document->auditResult()->updateOrCreate(
             [
@@ -71,6 +84,7 @@ class AnalyzeDocumentJob implements ShouldQueue
 
         $document->update([
             'processing_status' => DocumentProcessingStatus::Completed,
+            'processing_progress' => 100,
         ]);
 
         Log::info("AnalyzeDocumentJob finished.", [

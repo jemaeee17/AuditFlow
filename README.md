@@ -249,7 +249,8 @@ Update Document Status
  ├── Processing Progress: 100%
  └── Status: Completed
 
-**Current Status:** 
+
+\*\*Current Status:\*\*
 The application currently supports the complete document auditing workflow.
 
 Users can:
